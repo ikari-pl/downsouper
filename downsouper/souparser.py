@@ -44,6 +44,7 @@ def post_to_json(post):
         "id": post.attrs.get('id'),
         "content": content_json
     })
+    return post_json
 
 
 def parse_unknown_post(post):

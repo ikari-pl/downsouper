@@ -2,6 +2,7 @@
 import argparse
 import json
 import math
+import os
 import sys
 from time import sleep
 import requests
@@ -71,6 +72,7 @@ if __name__ == '__main__':
     chunk_key = "latest"
     data = None
     filename = args.output % args.url
+    filename_temp = filename + '-incomplete'
 
     if args.cont or args.fix:
         # fix and continuation mode require reopening last file
@@ -93,8 +95,9 @@ if __name__ == '__main__':
                 url = base_url + ('/since/%s?mode=own' % lowest)
             else:
                 print("Nothing more to fix. Writing.")
-                with open(filename, 'w') as fp:
+                with open(filename_temp, 'w') as fp:
                     json.dump(chunks, fp, indent=2)
+                os.rename(filename_temp, filename)
                 sys.exit(0)
 
     while data is None and url is not None:
@@ -114,9 +117,10 @@ if __name__ == '__main__':
                         chunk_key = m.group(1)
                     url = base_url + data['more']
                     print("Next page is: %s (since %s). Sleeping 1s" % (url, chunk_key))
-                    with open(filename, 'w') as fp:
+                    with open(filename_temp, 'w') as fp:
                         json.dump(chunks, fp, indent=2)
                         data = None
+                    os.rename(filename_temp, filename)
                     sleep(1)
 
             elif b.status_code == 429:
