@@ -18,7 +18,7 @@ It will collect their publication time, content, who it was reposted from, etc.
 
 ### Missing features
 
-* Being able to **get updates**. Since the tools is splitting everything by the chunks you get as pages, adding one post shifts everything!!!! and would duplicate content probably. Need to solve this :( 
+* Get reactions and what you reacted to (not just the links)
 * Once we get the dump, it should be able to download all attachments
 * Configurable retries?
 * Converting it later to an export format other services will understand; honestly I'm good with just not losing the data for now.

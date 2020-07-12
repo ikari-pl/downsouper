@@ -1,10 +1,9 @@
 import json
-import sys
+import re
 from collections import defaultdict
 from copy import deepcopy
 
 from bs4 import BeautifulSoup
-import re
 
 POST_KIND = re.compile(r'^post[-_]([a-z]+)$')
 IMAGE_RESIZEABLE = re.compile(r'([a-z0-9]{4}_[a-z0-9]{4})_[a-z0-9]{3}')
@@ -19,6 +18,9 @@ def parse_soup(html):
     }
     posts_div = soup.select_one("#posts")
     posts = posts_div.select(".post")
+    # sometimes div that looks like a post is a child of another post
+    # filter out the ones that are descendants of others... :(
+    posts = list(filter(lambda p: not any([p in p2.descendants for p2 in posts]), posts))
     more_link = soup.select_one("a.more")
     posts_list = [post_to_json(post) for post in posts] if posts else []
     return {
@@ -39,7 +41,7 @@ def post_to_json(post):
     meta = extract_post_meta(post)
     content = post.select_one('.content')
     if not content:
-        print("Old format post! Results might be a little broken")
+        print("Old format (?)  post! Results might be a little broken")
         content = post
     content_json = extract_content(meta, content)
 
@@ -67,7 +69,9 @@ def parse_unknown_post(post):
 def extract_content(meta, content):
     images = content.select('.imagecontainer img')
     videos = content.select('video')
+    audios = content.select('audio')
     caption = content.select_one('.caption')
+    reactions = content.select_one('.reactions_by')
     content_json = {
         "images": [{"src": img.get('src'),
                     "width": parse_int(img.get('width', None)),
@@ -104,7 +108,7 @@ def extract_content(meta, content):
         content_json['description'] = descr.encode_contents(2, 'utf-8').decode()
     body = content.select_one('.body')
     if body:
-        content_json['body'] = body.encode_contents(2, 'utf-8').decode()
+        content_json['body'] = body.encode_contents(2, 'utf-8').decode().strip()
     if meta['kind'] == 'quote':
         # this is likely a tumblr-imported post
         # it has a .body, already extracted, and may have a source (cite)
@@ -118,7 +122,16 @@ def extract_content(meta, content):
                 "title": link.text
             }
         # links can have a full post body too, but this is covered by .body already
-    if meta['kind'] not in ('image', 'regular', 'video', 'quote', 'link'):
+    if audios:
+        content_json['audio'] = [audio.get('src') for audio in audios]
+    if reactions:
+        # they are just links :( download later?
+        reaction_links = reactions.select('a.original_link')
+        content_json['reactions'] = [{
+            "author": original.select_one('.user_container .name').text,
+            "url": original.get('href')
+        } for original in reaction_links]
+    if meta['kind'] not in ('image', 'regular', 'video', 'quote', 'link', 'file'):
         content_json['unknown'] = content.encode_contents(2, 'utf-8').decode()
     return content_json
 
@@ -147,13 +160,12 @@ def extract_post_meta(post):
                 meta['kind'] = maybe_kind
 
     # if it's a reaction, what was the original post?
-    # TODO: discussions?
     if meta['is_reaction']:
-        original = post.select_one('a.original_link')
-        meta['original_post'] = {
+        originals = post.select('.reaction_to a.original_link')
+        meta['original_posts'] = [{
             "author": original.select_one('.user_container .name').text,
             "url": original.get('href')
-        }
+        } for original in originals]
 
     # get permalink and title from the post icon, or from '#' if this fails
     post_icon = post.select_one('.icon.type a')
