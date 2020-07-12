@@ -1,11 +1,12 @@
 import json
+import sys
 from collections import defaultdict
 from copy import deepcopy
 
 from bs4 import BeautifulSoup
 import re
 
-POST_KIND = re.compile(r'^post_(\w+)$')
+POST_KIND = re.compile(r'^post[-_]([a-z]+)$')
 IMAGE_RESIZEABLE = re.compile(r'([a-z0-9]{4}_[a-z0-9]{4})_[a-z0-9]{3}')
 
 
@@ -37,6 +38,9 @@ def parse_int(str_maybe):
 def post_to_json(post):
     meta = extract_post_meta(post)
     content = post.select_one('.content')
+    if not content:
+        print("Old format post! Results might be a little broken")
+        content = post
     content_json = extract_content(meta, content)
 
     post_json = meta
@@ -81,7 +85,14 @@ def extract_content(meta, content):
             img['ratio'] = img['width'] / img['height']
         content_json['full_res_images'] = full_res_images
     if caption:
-        content_json['source_link'] = caption.select_one('a').get('href')
+        # some old captions (2013 and earlier) don't have links...
+        # they are actual captions, apparently
+        caption_link = caption.select_one('a')
+        if not caption_link:
+            content_json['cite'] = caption.text.strip()
+            print("! skipping source_link as it seems a source cite: %s" % content_json['cite'])
+        else:
+            content_json['source_link'] = caption_link.get('href')
     if videos:
         content_json['video'] = [{
             "src": video.get('src'),
@@ -150,7 +161,11 @@ def extract_post_meta(post):
         meta['permalink'] = post_icon.get('href')
         meta['title'] = post_icon.get('title')
     if not meta['permalink']:
-        meta['permalink'] = post.select_one('.permalink a').get('href')
+        perma = post.select_one('.permalink a')
+        if perma:
+            meta['permalink'] = perma.get('href')
+        else:
+            print("! missing permalink for post?")
 
     # get post author (soup owner in most cases) info
     author_icon = post.select_one('.icon.author')

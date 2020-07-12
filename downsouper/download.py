@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import argparse
 import json
 import math
@@ -111,26 +112,31 @@ if __name__ == '__main__':
                     html = b.text
                     data = parse_soup(html)
                     chunks[chunk_key] = data
-                    m = MORE_SINCE.match(data['more'])
-                    if m:
-                        # next chunk will be XYZ from /since/XYZ?mode=own
-                        chunk_key = m.group(1)
-                    url = base_url + data['more']
-                    print("Next page is: %s (since %s). Sleeping 1s" % (url, chunk_key))
+                    if data['more']:
+                        m = MORE_SINCE.match(data['more'])
+                        if m:
+                            # next chunk will be XYZ from /since/XYZ?mode=own
+                            chunk_key = m.group(1)
+                        url = base_url + data['more']
+                        print("Next page is: %s (since %s). Sleeping 1s" % (url, chunk_key))
+                    else:
+                        print("We are DONE!!! 🎉🥳 THIS WAS THE LAST PAGE!")
+                        url = None
                     with open(filename_temp, 'w') as fp:
                         json.dump(chunks, fp, indent=2)
                         data = None
+                    os.remove(filename)
                     os.rename(filename_temp, filename)
                     sleep(1)
 
             elif b.status_code == 429:
                 # too many requests
-                print("Throttled. Sleeping...")
-                sleep(30)
+                print("Throttled. Sleeping 4 hours...")
+                sleep(4*60*60)
                 print("Woken up. Retrying now.")
             elif b.status_code > 500:
-                print("Got a %s error code, waiting 4 hours" % b.status_code)
-                sleep(4*60*60)
+                print("Got a %s error code, waiting 10 seconds..." % b.status_code)
+                sleep(10)
                 print("Woken up. Retrying now.")
         except ConnectionError as err:
             print("Received the following error: %s" % err)
