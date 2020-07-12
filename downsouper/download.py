@@ -127,7 +127,9 @@ if __name__ == '__main__':
                     with open(filename_temp, 'w') as fp:
                         json.dump(chunks, fp, indent=2)
                         data = None
-                    os.remove(filename)
+                    if os.path.exists(filename):
+                        # windows needs this
+                        os.remove(filename)
                     os.rename(filename_temp, filename)
                     sleep(1)
 
