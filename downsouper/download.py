@@ -31,11 +31,11 @@ parser.add_argument(
     help="Output JSON file path/name, where the data will be stored"
 )
 parser.add_argument(
-    "-r",
-    "--retries",
-    dest="retries",
-    help="How many times to retry if there's a 50X error (defaults to 0, forever)",
-    type=int
+    "-n",
+    "--new",
+    dest="newposts",
+    help="Find new posts too (new since last dump)",
+    action="store_true"
 )
 parser.add_argument(
     "-c",
@@ -80,10 +80,12 @@ if __name__ == '__main__':
         with open(filename, 'r') as fp:
             chunks = json.load(fp)
             lowest = math.inf
+            highest = 0
             for k in chunks.keys():
                 i = parse_int(k)
                 if isinstance(i, int):
                     lowest = min(i, lowest)
+                    highest = max(i, highest)
                     if args.fix:
                         chunks[k] = fix_chunk(chunks[k])
         if lowest == math.inf:

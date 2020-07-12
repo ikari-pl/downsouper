@@ -18,6 +18,7 @@ It will collect their publication time, content, who it was reposted from, etc.
 
 ### Missing features
 
+* Being able to **get updates**. Since the tools is splitting everything by the chunks you get as pages, adding one post shifts everything!!!! and would duplicate content probably. Need to solve this :( 
 * Once we get the dump, it should be able to download all attachments
 * Configurable retries?
 * Converting it later to an export format other services will understand; honestly I'm good with just not losing the data for now.
@@ -150,30 +151,30 @@ The examples here are stripped down to the most interesting fields.
 
 ## Bash tips and tricks when features are missing
 
-So I figured: what if I want to make my soup preserved, but for my fav pornsoup I'm ok with just the files?
+So I figured: what if I want to get the files as fast as possible?
 
 
 Install `jq` for fancy json querying, then:
 
 ```bash
 # getting all video urls from a dump
-cat souporn.soup.io.json | jq -r "keys[] as \$k | .[(\$k)].posts[].content.video[0].src" | grep -vP "^null$"
+cat ikari.soup.io.json | jq -r "keys[] as \$k | .[(\$k)].posts[].content.video[0].src" | grep -vP "^null$"
 ```
 ---
 Go a step further and download all the videos:
 ```bash
-mkdir porn
-cd porn
-cat ../souporn.soup.io.json | jq -r "keys[] as \$k | .[(\$k)].posts[].content.video[0].src" | grep -vP "^null$" | xargs wget -nc
+mkdir assets
+cd assets
+cat ../ikari.soup.io.json | jq -r "keys[] as \$k | .[(\$k)].posts[].content.video[0].src" | grep -vP "^null$" | xargs wget -nc
 ```
 ---
 
 Download all images in their full size (notice the script drops the _xxx resizing suffix and puts a nice full size images list when possible when making the soup dump)
 
 ```bash
-mkdir porn
-cd porn
-cat ../souporn.soup.io.json | jq -r "keys[] as \$k | .[(\$k)].posts[].content.full_res_images[]?" | grep -vP "^null$" | xargs wget -nc 
+mkdir assets
+cd assets
+cat ../ikari.soup.io.json | jq -r "keys[] as \$k | .[(\$k)].posts[].content.full_res_images[]?" | grep -vP "^null$" | xargs wget -nc 
 ```
 
 Be careful, it will take a lot of space. Dump of images from ikari.soup.io takes 19GiB of disk space. 
