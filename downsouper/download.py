@@ -6,6 +6,7 @@ import math
 import os
 import re
 import sys
+from random import random
 from time import sleep
 
 import requests
@@ -66,6 +67,9 @@ def fix_chunk(chunk):
     chunk['posts'] = fixed
     return chunk
 
+def get_random(base, delta):
+    r = base + random()*delta - delta*0.5
+    return r
 
 def get_post_ids(chunk):
     ids = set()
@@ -185,14 +189,15 @@ if __name__ == '__main__':
                 sleep(4 * 60 * 60)
                 print("Woken up. Retrying now.")
             elif b.status_code > 500:
-                print("Got a %s error code, waiting 10 seconds..." % b.status_code)
-                sleep(10)
+                random_sleep = get_random(5, 3)
+                print("Got a %s error code, waiting %.2f seconds..." % (b.status_code, random_sleep))
+                sleep(random_sleep)
                 print("Woken up. Retrying now.")
         except ConnectionError as err:
             print("Received the following error: %s" % err)
-            sleep(10)
+            sleep(get_random(5, 3))
             print("Retrying...?")
         except NewConnectionError as err:
             print("Received the following error: %s" % err)
-            sleep(10)
+            sleep(get_random(5, 3))
             print("Retrying...?")
