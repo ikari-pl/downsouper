@@ -170,7 +170,7 @@ if __name__ == '__main__':
                             # next chunk will be XYZ from /since/XYZ?mode=own
                             chunk_key = m.group(1)
                         url = base_url + data['more']
-                        print("Next page is: %s (since %s). We got %d posts so far. Sleeping 1s" % (url, len(known_post_ids), chunk_key))
+                        print("Next page is: %s (since %s). We got %d posts so far. Sleeping 1s" % (url, chunk_key, len(known_post_ids)))
                     else:
                         print("We are DONE!!! 🎉🥳 THIS WAS THE LAST PAGE!")
                         url = None
