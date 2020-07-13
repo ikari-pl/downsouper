@@ -214,3 +214,8 @@ Be careful, it will take a lot of space. Dump of images from ikari.soup.io takes
 8. **I cannot into computers, make it a button**
 
    I want to, but they didn't give us enough time. I can't right now. I have a job as well.
+   
+9. **Why are all timestamps `"?"`?**
+
+   You have to enable showing them on your soup first, if you want them included.
+   
