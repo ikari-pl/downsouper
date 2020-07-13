@@ -172,9 +172,9 @@ cat ../ikari.soup.io.json | jq -r "keys[] as \$k | .[(\$k)].posts[].content.vide
 Download all images in their full size (notice the script drops the _xxx resizing suffix and puts a nice full size images list when possible when making the soup dump)
 
 ```bash
-mkdir assets
-cd assets
-cat ../ikari.soup.io.json | jq -r "keys[] as \$k | .[(\$k)].posts[].content.full_res_images[]?" | grep -vP "^null$" | xargs wget -nc 
+mkdir ikari
+cd ikari
+cat ../$(basename $(pwd)).soup.io.json | jq -r "keys[] as \$k | .[(\$k)].posts[].content.full_res_images[]?" | grep -vP "^null$" | xargs wget -nc 
 ```
 
 Be careful, it will take a lot of space. Dump of images from ikari.soup.io takes 19GiB of disk space. 
