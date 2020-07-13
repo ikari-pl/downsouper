@@ -154,6 +154,7 @@ if __name__ == '__main__':
                     # filter duplicates, especially if we're looking for new posts
                     new_ids = get_post_ids(data)
                     dups = known_post_ids & new_ids
+                    known_post_ids |= new_ids
                     if len(dups) > 0:
                         print("%s posts are already known and will be skipped: %s" % (len(dups), ', '.join([str(d) for d in dups])))
                         if len(dups) == len(new_ids):
