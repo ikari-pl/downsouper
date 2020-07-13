@@ -9,6 +9,7 @@ import sys
 from time import sleep
 
 import requests
+from urllib3.exceptions import NewConnectionError
 
 from .souparser import parse_soup, parse_int, parse_unknown_post
 
@@ -150,7 +151,7 @@ if __name__ == '__main__':
                     new_ids = get_post_ids(data)
                     dups = known_post_ids & new_ids
                     if len(dups) > 0:
-                        print("%s posts are already known and will be skipped" % len(dups))
+                        print("%s posts are already known and will be skipped: %s" % (len(dups), ', '.join([str(d) for d in dups])))
                         if len(dups) == len(new_ids):
                             print("All these are known, nothing left to do.")
                             url = None
@@ -188,6 +189,10 @@ if __name__ == '__main__':
                 sleep(10)
                 print("Woken up. Retrying now.")
         except ConnectionError as err:
+            print("Received the following error: %s" % err)
+            sleep(10)
+            print("Retrying...?")
+        except NewConnectionError as err:
             print("Received the following error: %s" % err)
             sleep(10)
             print("Retrying...?")
