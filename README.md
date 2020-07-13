@@ -178,3 +178,39 @@ cat ../ikari.soup.io.json | jq -r "keys[] as \$k | .[(\$k)].posts[].content.full
 ```
 
 Be careful, it will take a lot of space. Dump of images from ikari.soup.io takes 19GiB of disk space. 
+
+# FAQ
+
+1. **Why is the code so ugly?**
+ 
+   Because I'm in a hurry. Need to download before soup gets DDoSed by the angry users. We have a week left only.
+
+2. **I am getting error 429 and soup doesn't work**
+    
+   You got banned for making too many requests. Interestingly enough, this happens to me only if I open the web version of soup, not by testing the script. Turns out my browser makes a million retries on failing requests (and does so immediately). A buggy script or a browser extension would be to blame.
+        
+3. **I have the json, but I need the pictures**
+
+   Download all the `full_size_image`, `video.src` and `audio.src` before soup goes down. On a fast connection, this worked suprisingly well (downloading 19 GB of my soup wasn't a problem on the server-side). You can do parallel requests.
+   
+4. **Why is it so slow?**
+
+   It downloads your soup one page (screen) at a time, like you would with the browser. Each page takes 3-15 seconds to generate. Soup is under heavy stress now. My soup was 2151 pages long, which means 2151 requests, each taking ~10 seconds &emdash; should finish within 6 hours. In reality it took a little more.     
+     
+5. **How to convert it to Wordpress archive / tumblr??**
+
+   Well, this is a problem to solve once we have the backup. It has enough metadata to do so.
+   
+6. **What's the file structure?**
+
+   It's one huge JSON grouped into "chunks" which are exactly the pages as they loaded one by one. This also means adding new posts shifts EVERYTHING within the chunks. I tried to deal with it with the new `--newposts` option but it's not well tested at all.
+   
+   On the other side it helps group the results into smaller pages and was helping me continue from where it was interrupted previously easy. Each chunk ID relates to one `/since/{chunk}` request.
+   
+7. **What is `content.unkown`?**
+
+   If a rare type of post appeared, I just dumped everything to be parseable later (with the `--fix` option).
+   
+8. **I cannot into computers, make it a button**
+
+   I want to, but they didn't give us enough time. I can't right now. I have a job as well.
