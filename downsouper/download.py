@@ -112,6 +112,9 @@ if __name__ == '__main__':
             highest = 0
             for k, chunk in chunks.items():
                 ids = get_post_ids(chunk)
+                if not ids:
+                    # crap, empty chunk, fix me later
+                    continue
                 # add to known posts, to avoid duplicates
                 known_post_ids |= ids
                 # global min and max of post ids
@@ -137,8 +140,8 @@ if __name__ == '__main__':
             if highest == 0:
                 print("Cannot find newer posts if we don't know any")
                 sys.exit(1)
-            # best guess on what the new chunk should be
-            url = base_url + ('/since/%s?mode=own' % (highest + 1000))
+            # we can just get the newest posts; once we hit duplicates, it should stop
+            url = base_url
 
     while data is None and url is not None:
         print("Downloading %s" % url)
@@ -164,7 +167,9 @@ if __name__ == '__main__':
                         data['posts'] = [post for post in data['posts'] if
                                          parse_int(post['id'].replace('multipost', '').replace('post', '')) not in dups]
 
-                    chunks[chunk_key] = data
+                    # only save nonempty chunks
+                    if (new_ids - dups):
+                        chunks[chunk_key] = data
                     if data['more']:
                         m = MORE_SINCE.match(data['more'])
                         if m:
