@@ -197,7 +197,7 @@ def extract_post_meta(post):
     # or two items - reposted from [0] via [1]
     # --
     # for 'original' posts, source contains a list of reposters
-    source = post.select_one('.source')
+    source = post.select_one('.content > .source')
     if source:
         if 'reposted_by' in source.attrs['class']:
             meta['reposted_by'] = [source_url.select_one('img.photo').get('alt')

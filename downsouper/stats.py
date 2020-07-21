@@ -31,12 +31,15 @@ if __name__ == '__main__':
 
     print("%s has %s pages of content" % (url, len(chunks.keys())))
     posts_by_date = defaultdict(dict)
+    total = 0
     for since, chunk in chunks.items():
         for post in chunk['posts']:
             when = post['timestamp']
             if when != '?':
                 ts = datetime.strptime(when, '%b %d %Y %H:%M:%S UTC')
                 posts_by_date[ts.year]['total'] = (posts_by_date[ts.year].get('total', 0)) + 1
+            total += 1
     print("%s post count by year:" % url)
     for year in sorted(posts_by_date.keys()):
         print("%s - %s posts" % (year, posts_by_date[year]['total']))
+    print("Total: %d" % total)
