@@ -8,6 +8,8 @@ This made me try to hack this script together super fast in one evening of despa
 
 This tool also got me banned for debugging :( So be careful.
 
+**The output format of this script is supported by loforo.com without modifications; you will just have to share (host?) the files with them somehow**
+
 ### Whatizit
 
 This is a python tool to back up your soup.io account, by creating a comprehensive JSON archive of well-formed, parsed, trash-free list of your posts and their metadata.
@@ -19,8 +21,7 @@ It will collect their publication time, content, who it was reposted from, etc.
 ### Missing features
 
 * Get reactions and what you reacted to (not just the links)
-* Once we get the dump, it should be able to download all attachments
-* Configurable retries?
+* Once we get the dump, it should be able to download all attachments; for now, use the shell commands provided (actually more reliable)
 * Converting it later to an export format other services will understand; honestly I'm good with just not losing the data for now.
 * Dumping friends and followers list </3...
 
