@@ -1,8 +1,8 @@
 # downsouper
 
 So that when soup.io hits rock bottom, you don't have to.
- 
-After 11 years on soup.io, I am losing the portal that connected me to so many beautiful people and made me have some actual friends. I am a hoarded here. I don't wanna lose everything.  
+
+After 11 years on soup.io, I am losing the portal that connected me to so many beautiful people and made me have some actual friends. I am a hoarded here. I don't wanna lose everything.
 
 This made me try to hack this script together super fast in one evening of despair and sadness.
 
@@ -26,6 +26,15 @@ It will collect their publication time, content, who it was reposted from, etc.
 ### Usage
 
 * You need python 3
+* You need virtualenv
+  ```
+  pip install virtualenv
+
+  # For Mac users:
+  pip3 install virtualenv
+  ```
+
+  In case of problems on Mac, follow instructions/comments from [here](https://gist.github.com/pandafulmanda/730a9355e088a9970b18275cb9eadef3)
 * Install requirements in a virtualenv:
 
   ```shell script
@@ -34,12 +43,13 @@ It will collect their publication time, content, who it was reposted from, etc.
   source .env/bin/activate        # and use it
   pip install -r requirements.txt # and install the requirements (one is called BeautifulSoup)
   ```
-  
+
 * Check usage:
 
 ```shell script
 python -m downsouper.download ikari.soup.io # use -c for continuing broken backups later
 ```
+
 
 You can check what options *want to* be supported (not necessarily are):
 
@@ -160,6 +170,7 @@ Install `jq` for fancy json querying, then:
 # getting all video urls from a dump
 cat ikari.soup.io.json | jq -r "keys[] as \$k | .[(\$k)].posts[].content.video[0].src" | grep -vP "^null$"
 ```
+
 ---
 Go a step further and download all the videos:
 ```bash
@@ -174,52 +185,59 @@ Download all images in their full size (notice the script drops the _xxx resizin
 ```bash
 mkdir ikari
 cd ikari
-cat ../$(basename $(pwd)).soup.io.json | jq -r "keys[] as \$k | .[(\$k)].posts[].content.full_res_images[]?" | grep -vP "^null$" | xargs wget -nc 
+cat ../$(basename $(pwd)).soup.io.json | jq -r "keys[] as \$k | .[(\$k)].posts[].content.full_res_images[]?" | grep -vP "^null$" | xargs wget -nc
 ```
 
-Be careful, it will take a lot of space. Dump of images from ikari.soup.io takes 19GiB of disk space. 
+Note for Mac users: grep does not recognize `P` flag, it should be `e` instead.
+
+Example:
+```
+... | grep -ve "^null$" | ...
+```
+
+Be careful, it will take a lot of space. Dump of images from ikari.soup.io takes 19GiB of disk space.
 
 # FAQ
 
 1. **Why is the code so ugly?**
- 
+
    Because I'm in a hurry. Need to download before soup gets DDoSed by the angry users. We have a week left only.
 
 2. **I am getting error 429 and soup doesn't work**
-    
+
    You got banned for making too many requests. Interestingly enough, this happens to me only if I open the web version of soup, not by testing the script. Turns out my browser makes a million retries on failing requests (and does so immediately). A buggy script or a browser extension would be to blame.
-        
+
 3. **I have the json, but I need the pictures**
 
    Download all the `full_size_image`, `video.src` and `audio.src` before soup goes down. On a fast connection, this worked suprisingly well (downloading 19 GB of my soup wasn't a problem on the server-side). You can do parallel requests.
-   
+
 4. **Why is it so slow?**
 
-   It downloads your soup one page (screen) at a time, like you would with the browser. Each page takes 3-15 seconds to generate. Soup is under heavy stress now. My soup was 2151 pages long, which means 2151 requests, each taking ~10 seconds &emdash; should finish within 6 hours. In reality it took a little more.     
-     
+   It downloads your soup one page (screen) at a time, like you would with the browser. Each page takes 3-15 seconds to generate. Soup is under heavy stress now. My soup was 2151 pages long, which means 2151 requests, each taking ~10 seconds &emdash; should finish within 6 hours. In reality it took a little more.
+
 5. **How to convert it to Wordpress archive / tumblr??**
 
    Well, this is a problem to solve once we have the backup. It has enough metadata to do so.
-   
+
 6. **What's the file structure?**
 
    It's one huge JSON grouped into "chunks" which are exactly the pages as they loaded one by one. This also means adding new posts shifts EVERYTHING within the chunks. I tried to deal with it with the new `--newposts` option but it's not well tested at all.
-   
+
    On the other side it helps group the results into smaller pages and was helping me continue from where it was interrupted previously easy. Each chunk ID relates to one `/since/{chunk}` request.
-   
+
 7. **What is `content.unkown`?**
 
    If a rare type of post appeared, I just dumped everything to be parseable later (with the `--fix` option).
-   
+
 8. **I cannot into computers, make it a button**
 
    I want to, but they didn't give us enough time. I can't right now. I have a job as well.
-   
+
 9. **Why are all timestamps `"?"`?**
 
    You have to enable showing them on your soup first, if you want them included.
-   
-   
+
+
 ## Update 2020-07-22: Pssst, it still works
 (this entire section is stolen from a sister project [nathell/soupscraper](https://github.com/nathell/soupscraper/) )
 
