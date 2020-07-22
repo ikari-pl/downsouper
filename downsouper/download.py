@@ -11,6 +11,7 @@ from time import sleep
 
 import requests
 from urllib3.exceptions import NewConnectionError
+from requests.exceptions import ConnectionError
 
 from .souparser import parse_soup, parse_int, parse_unknown_post
 
