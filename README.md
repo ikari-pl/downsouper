@@ -6,7 +6,7 @@ After 11 years on soup.io, I am losing the portal that connected me to so many b
 
 This made me try to hack this script together super fast in one evening of despair and sadness.
 
-**The output format of this script is supported by loforo.com without modifications; you will just have to share (host?) the files with them somehow**
+**The output format of this script is supported by loforo.com without modifications; you will just have to share (host?) the files with them somehow, as of 23.07.2020 the JSON will be enough**. Example soup imported from this script's export: http://ikari.loforo.com/ 
 
 ### Whatizit
 
