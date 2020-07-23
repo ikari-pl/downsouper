@@ -205,6 +205,10 @@ if __name__ == '__main__':
             sleep(get_random(5, 3))
             print("Retrying...?")
         except NewConnectionError as err:
-            print("Received the following error: %s" % err)
-            sleep(get_random(5, 3))
+            print("Soup rejected us: %s" % err)
+            sleep(get_random(2, 2))
             print("Retrying...?")
+        except requests.exceptions.ReadTimeout as err:
+            print("It died while sending the response: %s" % err)
+            sleep(get_random(2, 1))
+            print("Retrying hard...")
