@@ -29,9 +29,10 @@ It will collect their publication time, content, who it was reposted from, etc.
 * Install requirements in a virtualenv:
 
   ```shell script
-  python -m virtualenv .env 
-  source .env/bin/activate  
-  pip install -r requirements.txt
+  pip3 install virtualenv         # virtualenv is a python package to separate project and their requirements
+  virtualenv -p python3 .env      # create one for this project
+  source .env/bin/activate        # and use it
+  pip install -r requirements.txt # and install the requirements (one is called BeautifulSoup)
   ```
   
 * Check usage:
