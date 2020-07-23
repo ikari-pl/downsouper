@@ -37,7 +37,7 @@ It will collect their publication time, content, who it was reposted from, etc.
 * Check usage:
 
 ```shell script
-python -m downsouper.download -c ikari.soup.io
+python -m downsouper.download ikari.soup.io # use -c for continuing broken backups later
 ```
 
 You can check what options *want to* be supported (not necessarily are):
