@@ -195,7 +195,7 @@ if __name__ == '__main__':
                 print("Throttled. Sleeping 4 hours...")
                 sleep(4 * 60 * 60)
                 print("Woken up. Retrying now.")
-            elif b.status_code > 500:
+            elif b.status_code >= 500:
                 random_sleep = get_random(8, 6)
                 print("Got a %s error code, waiting %.2f seconds..." % (b.status_code, random_sleep))
                 sleep(random_sleep)
