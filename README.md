@@ -237,3 +237,7 @@ Here’s how:
 ```
 
 Put in your soup’s name in place of `YOURSOUP`.
+
+## Update 2020-07-26: Well, it doesn't.
+
+The servers throw 503 errors only now.
